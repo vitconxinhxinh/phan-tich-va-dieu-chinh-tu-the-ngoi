@@ -17,7 +17,7 @@
 % === Tác giả ===
 \author{
     \textbf{Đặng Thanh Bình, Tạ Việt Anh, Vũ Hải Đức, Nguyễn Tuấn Anh} \\
-    \textit{Nhóm 7, CNTT 16-04, Khoa Công Nghệ Thông Tin} \\
+    \textit{Nhóm 5, CNTT 16-04, Khoa Công Nghệ Thông Tin} \\
     \textit{Trường Đại Học Đại Nam, Việt Nam} \\
     \textbf{ThS. Nguyễn Văn Nhân, ThS. Lê Trung Hiếu} \\
     \textit{Giảng viên hướng dẫn, Khoa Công Nghệ Thông Tin} \\
@@ -62,12 +62,13 @@ Hệ thống phát hiện tư thế ngồi thông minh được thiết kế đ�
 \subsection{Kiến trúc hệ thống}
 Hệ thống được triển khai theo mô hình máy khách - máy chủ (\textit{client-server}), trong đó máy khách đóng vai trò thu thập dữ liệu và máy chủ đảm nhận việc xử lý và phân tích dữ liệu. Kiến trúc của hệ thống bao gồm các thành phần chính sau:
 
-\begin{itemize}
-    \item \textbf{Máy khách (Client):} Máy khách sử dụng camera để thu thập dữ liệu video theo thời gian thực. Dữ liệu này được gửi về máy chủ thông qua giao thức HTTP. Máy khách cũng có nhiệm vụ hiển thị giao diện người dùng, bao gồm video trực tiếp và các thông báo phản hồi từ máy chủ.
-    \item \textbf{Máy chủ (Server):} Máy chủ nhận dữ liệu video từ máy khách và tiến hành xử lý bằng cách sử dụng thư viện Mediapipe Pose và OpenCV. Mediapipe Pose được sử dụng để nhận diện các điểm keypoint trên cơ thể, trong khi OpenCV giúp xử lý hình ảnh và video. Dựa trên các điểm keypoint này, hệ thống tính toán góc nghiêng của cổ và lưng để xác định tư thế ngồi của người dùng.
-    \item \textbf{Phản hồi (Feedback):} Sau khi phân tích, hệ thống gửi thông báo phản hồi cho người dùng dưới dạng âm thanh và hiển thị trực quan trên giao diện. Nếu phát hiện tư thế sai, hệ thống sẽ đưa ra cảnh báo bằng giọng nói và hiển thị thông báo trên màn hình.
-\end{itemize}
+Hệ thống phát hiện tư thế ngồi thông minh được xây dựng dựa trên sự kết hợp chặt chẽ giữa ba thành phần chính: máy khách (Client), máy chủ (Server) và phản hồi (Feedback). 
 
+\textbf{Máy khách (Client)} đóng vai trò thu thập dữ liệu video từ camera theo thời gian thực. Dữ liệu này được gửi về máy chủ thông qua giao thức HTTP. Ngoài ra, máy khách còn có nhiệm vụ hiển thị giao diện người dùng, bao gồm video trực tiếp và các thông báo phản hồi từ máy chủ. 
+
+\textbf{Máy chủ (Server)} nhận dữ liệu video từ máy khách và tiến hành xử lý bằng cách sử dụng thư viện Mediapipe Pose và OpenCV. Mediapipe Pose được sử dụng để nhận diện các điểm keypoint trên cơ thể, trong khi OpenCV giúp xử lý hình ảnh và video. Dựa trên các điểm keypoint này, hệ thống tính toán góc nghiêng của cổ và lưng để xác định tư thế ngồi của người dùng. 
+
+Sau khi phân tích, hệ thống gửi thông báo phản hồi cho người dùng dưới dạng âm thanh và hiển thị trực quan trên giao diện. Nếu phát hiện tư thế sai, hệ thống sẽ đưa ra cảnh báo bằng giọng nói và hiển thị thông báo trên màn hình. Quá trình này đảm bảo rằng người dùng luôn nhận được thông tin cập nhật về tư thế của mình một cách kịp thời và chính xác.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\linewidth]{images/system_architecture.png}
@@ -91,12 +92,17 @@ Với kiến trúc được thiết kế khoa học và quy trình hoạt độn
 
 Flask có nhiệm vụ chính là nhận dữ liệu video từ máy khách thông qua giao thức HTTP, truyền dữ liệu này đến các mô-đun phân tích để xử lý, và sau đó trả về phản hồi cho máy khách. Phản hồi này bao gồm thông tin về tư thế ngồi của người dùng và các cảnh báo nếu phát hiện tư thế sai. Quy trình hoạt động của Flask có thể được chia thành các bước chính như sau:
 
-\begin{enumerate}
-    \item \textbf{Khởi tạo máy chủ Flask:} Máy chủ Flask được khởi tạo và mở kết nối HTTP để sẵn sàng nhận dữ liệu từ máy khách.
-    \item \textbf{Nhận dữ liệu video:} Dữ liệu video được gửi từ máy khách dưới dạng các khung hình (\textit{frames}) thông qua giao thức HTTP. Flask nhận các khung hình này và chuẩn bị cho quá trình xử lý tiếp theo.
-    \item \textbf{Xử lý và phân tích dữ liệu:} Các khung hình được truyền đến các mô-đun phân tích như Mediapipe và OpenCV. Mediapipe được sử dụng để nhận diện các điểm keypoint trên cơ thể, trong khi OpenCV giúp xử lý hình ảnh và video. Dựa trên các điểm keypoint này, hệ thống tính toán góc nghiêng của cổ và lưng để xác định tư thế ngồi.
-    \item \textbf{Gửi phản hồi:} Sau khi phân tích, Flask gửi phản hồi về trạng thái tư thế và thông báo cảnh báo cho máy khách. Phản hồi này được hiển thị trên giao diện người dùng và có thể bao gồm cảnh báo bằng giọng nói nếu phát hiện tư thế sai.
-\end{enumerate}
+\textbf{Bước 1: Khởi tạo máy chủ Flask}  
+    Máy chủ Flask được khởi tạo và mở kết nối HTTP để sẵn sàng nhận dữ liệu từ máy khách.
+    
+ \textbf{Bước 2: Nhận dữ liệu video}  
+    Dữ liệu video được gửi từ máy khách dưới dạng các khung hình (\textit{frames}) thông qua giao thức HTTP. Flask nhận các khung hình này và chuẩn bị cho quá trình xử lý tiếp theo.
+    
+\textbf{Bước 3: Xử lý và phân tích dữ liệu}  
+    Các khung hình được truyền đến các mô-đun phân tích như Mediapipe và OpenCV. Mediapipe được sử dụng để nhận diện các điểm keypoint trên cơ thể, trong khi OpenCV giúp xử lý hình ảnh và video. Dựa trên các điểm keypoint này, hệ thống tính toán góc nghiêng của cổ và lưng để xác định tư thế ngồi.
+    
+ \textbf{Bước 4: Gửi phản hồi}  
+    Sau khi phân tích, Flask gửi phản hồi về trạng thái tư thế và thông báo cảnh báo cho máy khách. Phản hồi này được hiển thị trên giao diện người dùng và có thể bao gồm cảnh báo bằng giọng nói nếu phát hiện tư thế sai.
 
 \begin{figure}[H]
     \centering
@@ -120,12 +126,13 @@ Mediapipe Pose có khả năng phát hiện và theo dõi 33 điểm đặc trư
 
 Quy trình hoạt động của Mediapipe Pose có thể được chia thành các bước chính như sau:
 
-\begin{enumerate}
-    \item \textbf{Nhận khung hình từ camera:} Hệ thống sử dụng OpenCV để thu thập các khung hình từ camera theo thời gian thực. Các khung hình này được chuyển đổi sang định dạng RGB để phù hợp với quá trình xử lý của Mediapipe Pose.
-    \item \textbf{Phát hiện các điểm đặc trưng:} Mediapipe Pose sử dụng mạng nơ-ron tích chập (CNN) để phát hiện và theo dõi 33 điểm đặc trưng trên cơ thể. Các điểm này bao gồm các khớp xương chính như vai, khuỷu tay, cổ tay, hông, đầu gối và mắt cá chân.
-    \item \textbf{Tính toán góc nghiêng:} Dựa trên các điểm đặc trưng đã phát hiện, hệ thống tính toán góc nghiêng của các bộ phận cơ thể như cổ, lưng và chân. Các góc nghiêng này được sử dụng để xác định tư thế ngồi của người dùng.
-    \item \textbf{Xác định tư thế:} Hệ thống so sánh các góc nghiêng với các ngưỡng đã thiết lập để xác định tư thế ngồi là đúng hay sai. Nếu phát hiện tư thế sai, hệ thống sẽ đưa ra cảnh báo cho người dùng.
-\end{enumerate}
+\textbf{Nhận khung hình từ camera:} Hệ thống sử dụng OpenCV để thu thập các khung hình từ camera theo thời gian thực. Các khung hình này được chuyển đổi sang định dạng RGB để phù hợp với quá trình xử lý của Mediapipe Pose.
+ 
+ \textbf{Phát hiện các điểm đặc trưng:} Mediapipe Pose sử dụng mạng nơ-ron tích chập (CNN) để phát hiện và theo dõi 33 điểm đặc trưng trên cơ thể. Các điểm này bao gồm các khớp xương chính như vai, khuỷu tay, cổ tay, hông, đầu gối và mắt cá chân.
+ 
+ \textbf{Tính toán góc nghiêng:} Dựa trên các điểm đặc trưng đã phát hiện, hệ thống tính toán góc nghiêng của các bộ phận cơ thể như cổ, lưng và chân. Các góc nghiêng này được sử dụng để xác định tư thế ngồi của người dùng.
+
+\textbf{Xác định tư thế:} Hệ thống so sánh các góc nghiêng với các ngưỡng đã thiết lập để xác định tư thế ngồi là đúng hay sai. Nếu phát hiện tư thế sai, hệ thống sẽ đưa ra cảnh báo cho người dùng.
 
 \begin{figure}[H]
     \centering
@@ -176,12 +183,13 @@ Hệ thống phát hiện tư thế ngồi thông minh được xây dựng dự
 
 Quy trình tích hợp các thành phần có thể được mô tả như sau:
 
-\begin{enumerate}
-    \item \textbf{Thu thập dữ liệu từ camera:} OpenCV đóng vai trò là thành phần đầu tiên trong quy trình, kết nối với camera để thu thập các khung hình video theo thời gian thực. Các khung hình này được chuyển đổi sang định dạng phù hợp và tiền xử lý để loại bỏ nhiễu, tăng cường chất lượng hình ảnh. Quá trình tiền xử lý bao gồm chuyển đổi không gian màu, cân bằng ánh sáng và giảm nhiễu, giúp cải thiện độ chính xác của các bước phân tích tiếp theo.
-    \item \textbf{Phân tích tư thế bằng Mediapipe Pose:} Sau khi thu thập và tiền xử lý dữ liệu, các khung hình được chuyển đến Mediapipe Pose để phân tích. Mediapipe Pose sử dụng mạng nơ-ron tích chập (CNN) để phát hiện và theo dõi 33 điểm đặc trưng trên cơ thể, bao gồm các khớp xương chính như vai, khuỷu tay, cổ tay, hông, đầu gối và mắt cá chân. Dựa trên các điểm đặc trưng này, hệ thống tính toán góc nghiêng của cổ và lưng, từ đó xác định tư thế ngồi của người dùng.
-    \item \textbf{Xử lý và phản hồi thông tin bằng Flask:} Kết quả phân tích từ Mediapipe Pose được chuyển đến Flask, nơi dữ liệu được xử lý và phản hồi lại cho người dùng. Flask đóng vai trò là cầu nối giữa máy khách và máy chủ, nhận dữ liệu từ Mediapipe Pose và gửi phản hồi theo thời gian thực. Nếu phát hiện tư thế sai, Flask sẽ kích hoạt phản hồi âm thanh và hiển thị cảnh báo trực quan trên giao diện người dùng.
-    \item \textbf{Phản hồi thời gian thực:} Hệ thống đảm bảo rằng thông tin về tư thế ngồi được cập nhật liên tục và phản hồi nhanh chóng. Thời gian phản hồi của hệ thống được duy trì dưới \textbf{1 giây}, đảm bảo người dùng nhận được thông tin kịp thời để điều chỉnh tư thế. Độ chính xác của hệ thống trong việc phát hiện tư thế đạt trên \textbf{95\%}, nhờ vào sự kết hợp hiệu quả giữa các thành phần.
-\end{enumerate}
+ \textbf{Thu thập dữ liệu từ camera:} OpenCV đóng vai trò là thành phần đầu tiên trong quy trình, kết nối với camera để thu thập các khung hình video theo thời gian thực. Các khung hình này được chuyển đổi sang định dạng phù hợp và tiền xử lý để loại bỏ nhiễu, tăng cường chất lượng hình ảnh. Quá trình tiền xử lý bao gồm chuyển đổi không gian màu, cân bằng ánh sáng và giảm nhiễu, giúp cải thiện độ chính xác của các bước phân tích tiếp theo.
+
+ \textbf{Phân tích tư thế bằng Mediapipe Pose:} Sau khi thu thập và tiền xử lý dữ liệu, các khung hình được chuyển đến Mediapipe Pose để phân tích. Mediapipe Pose sử dụng mạng nơ-ron tích chập (CNN) để phát hiện và theo dõi 33 điểm đặc trưng trên cơ thể, bao gồm các khớp xương chính như vai, khuỷu tay, cổ tay, hông, đầu gối và mắt cá chân. Dựa trên các điểm đặc trưng này, hệ thống tính toán góc nghiêng của cổ và lưng, từ đó xác định tư thế ngồi của người dùng.
+ 
+  \textbf{Xử lý và phản hồi thông tin bằng Flask:} Kết quả phân tích từ Mediapipe Pose được chuyển đến Flask, nơi dữ liệu được xử lý và phản hồi lại cho người dùng. Flask đóng vai trò là cầu nối giữa máy khách và máy chủ, nhận dữ liệu từ Mediapipe Pose và gửi phản hồi theo thời gian thực. Nếu phát hiện tư thế sai, Flask sẽ kích hoạt phản hồi âm thanh và hiển thị cảnh báo trực quan trên giao diện người dùng.
+ 
+  \textbf{Phản hồi thời gian thực:} Hệ thống đảm bảo rằng thông tin về tư thế ngồi được cập nhật liên tục và phản hồi nhanh chóng. Thời gian phản hồi của hệ thống được duy trì dưới \textbf{1 giây}, đảm bảo người dùng nhận được thông tin kịp thời để điều chỉnh tư thế. Độ chính xác của hệ thống trong việc phát hiện tư thế đạt trên \textbf{95\%}, nhờ vào sự kết hợp hiệu quả giữa các thành phần.
 
 \subsection{Ưu điểm của sự tích hợp}
 Sự tích hợp giữa Flask, Mediapipe Pose và OpenCV mang lại nhiều ưu điểm nổi bật cho hệ thống. Đầu tiên, hệ thống có khả năng phản hồi nhanh chóng, với thời gian phản hồi dưới \textbf{1 giây}, đảm bảo người dùng nhận được thông tin kịp thời. Thứ hai, độ chính xác của hệ thống trong việc phát hiện tư thế đạt trên \textbf{95\%}, nhờ vào sự kết hợp hiệu quả giữa các thành phần. Cuối cùng, hệ thống có tính linh hoạt cao, dễ dàng mở rộng và tích hợp với các công nghệ khác trong tương lai.
